@@ -1,0 +1,81 @@
+/* floating toc */
+
+#table-of-contents {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 200px;
+  height: 100%;
+  overflow:auto;
+}
+
+/* numbering figures and tables */
+
+body{
+  counter-reset:table figure;
+}
+.table{
+  width:auto;
+}
+
+caption::before{
+  counter-increment: table;
+  content: "Table " counter(table) ": ";
+}
+
+.caption::before{
+  counter-increment: figure;
+  content: "Figure " counter(figure) ": ";
+}
+
+caption, .caption{
+  font-style:italic;
+  margin-top:0.5em;
+  margin-bottom:0.5em;
+  width:80%;
+  text-align: left;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+/* place title on top */
+
+.figure {
+  display:flex;
+  flex-direction: column-reverse;
+}
+
+/* hover warning style */
+.warning {
+  color: #f44336; 
+  font-size:16px;
+  border:1px solid;
+  border-radius: 4px;
+  padding: 5px;
+  opacity:0.5;
+  transition: 0.3s;
+}
+.warning:hover {
+  opacity:1;
+}
+
+/* footnote styling */
+.footnotes {
+  font-size: 12px;
+}
+
+/* cesar warnings */
+
+@keyframes warning {
+  from {color: #f44336;}
+  to {color: orange;}
+}
+
+/* The element to apply the animation to */
+.cesar-warnings {
+  font-size: 16px;
+  animation-name: warning;
+  animation-duration: 1s;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+}

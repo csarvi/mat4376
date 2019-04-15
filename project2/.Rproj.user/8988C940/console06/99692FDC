@@ -1,0 +1,86 @@
+[0m[0K]0;:/p/IRP/DATA/uottawa/Recteur/??tudes (VR)/RIP(VRA)/Ad hoc/Ad_hoc_jose/training/project2[?25l
+[0;32mjdemello@9801-F96FKC2 [0;35m [0;33m/p/IRP/DATA/uottawa/Recteur/Études (VR)/RIP(VRA)/Ad hoc/Ad_hoc_jose/training/proj[0Ke
+ct2[0m[0K
+$[0K[3G[?25h[?25l$ g[0K[?25hi[0Kt[0K[7G[?25l$ git p[0K[?25hu[0Kl[0Kl[0K[12G[?25l$ git pull h[0K[?25https://github.com/jdemello/mat4376.git[0K[?25l
+[0K[?25hfatal: Not a git repository (or any of the parent directories): .git[0K[?25l
+[0K[?25h[?25l
+[0;32mjdemello@9801-F96FKC2 [0;35m [0;33m/p/IRP/DATA/uottawa/Recteur/Études (VR)/RIP(VRA)/Ad hoc/Ad_hoc_jose/training/proj[0Ke
+ct2[0m[0K
+$[0K[3G[?25h[?25l$ g[0K[?25hi[0Kt[0K[?25l
+[0K[?25husage: git [--version] [--help] [-C <path>] [-c name=value][0K[?25l
+           [--exec-path[=<path>]] [--html-path] [--man-path] [--info-path][0K
+           [-p | --paginate | --no-pager] [--no-replace-objects] [--bare][0K
+           [--git-dir=<path>] [--work-tree=<path>] [--namespace=<name>][0K
+           <command> [<args>][0K
+[0K
+These are common Git commands used in various situations:[0K
+[0K
+start a working area (see also: git help tutorial)[0K
+   clone      Clone a repository into a new directory[0K
+   init       Create an empty Git repository or reinitialize an existing one[0K
+[0K
+work on the current change (see also: git help everyday)[0K
+   add        Add file contents to the index[0K
+   mv         Move or rename a file, a directory, or a symlink[0K
+   reset      Reset current HEAD to the specified state[0K
+   rm         Remove files from the working tree and from the index[0K
+[0K
+examine the history and state (see also: git help revisions)[0K
+   bisect     Use binary search to find the commit that introduced a bug[0K
+   grep       Print lines matching a pattern[0K
+   log        Show commit logs[0K
+   show       Show various types of objects[0K
+   status     Show the working tree status[0K
+[0K
+grow, mark and tweak your common history[0K
+   branch     List, create, or delete branches[0K
+   checkout   Switch branches or restore working tree files[0K
+   commit     Record changes to the repository[0K
+   diff       Show changes between commits, commit and working tree, etc[0K
+   merge      Join two or more development histories together[0K
+   rebase     Reapply commits on top of another base tip[0K
+   tag        Create, list, delete or verify a tag object signed with GPG[0K
+[0K
+collaborate (see also: git help workflows)[0K
+   fetch      Download objects and refs from another repository[0K
+   pull       Fetch from and integrate with another repository or a local branch[0K
+   push       Update remote refs along with associated objects[0K
+[0K
+'git help -a' and 'git help -g' list available subcommands and some[0K
+concept guides. See 'git help <command>' or 'git help <concept>'[0K
+to read about a specific subcommand or concept.[0K
+[0K[?25h[?25l
+[0;32mjdemello@9801-F96FKC2 [0;35m [0;33m/p/IRP/DATA/uottawa/Recteur/Études (VR)/RIP(VRA)/Ad hoc/Ad_hoc_jose/training/proj[0Ke
+ct2[0m[0K
+$[0K[3G[?25h[?25l$ g[0K[?25hi[0Kt[0K[7G[?25l$ git c[0K[?25hh[0Ke[0Kc[0Kk[0Ko[0Ku[0Kt[0K[16G[?25l$ git checkout m[0K[?25ha[0Ks[0Kt[0Ke[0Kr[0K[?25l
+[0K[?25hfatal: Not a git repository (or any of the parent directories): .git[0K[?25l
+[0K[?25h[?25l
+[0;32mjdemello@9801-F96FKC2 [0;35m [0;33m/p/IRP/DATA/uottawa/Recteur/Études (VR)/RIP(VRA)/Ad hoc/Ad_hoc_jose/training/proj[0Ke
+ct2[0m[0K
+[0K[?25h$[0K[3G[?25l$ g[0K[?25hi[0Kt[0K[7G[?25l$ git c[0K[?25hl[0Ko[0Ks[0Ke[0K[13G[12G[?25l$ git clos[0K[?25h[?25l$ git clo[0K[?25hn[0Ke[0K[13G[?25l$ git clone https://github.com/jdemello/mat4376.git[0K[?25h[?25l
+[0K[?25hCloning into 'mat4376'...[0K[?25l
+[0K[?25hfatal: HttpRequestException encountered.[0K[?25l
+   An error occurred while sending the request.[0K
+[0K[?25herror: cannot spawn rpostback-askpass: No such file or directory[0K[?25l
+[0K[?25hUsername for 'https://github.com':[0K[36G[?25lUsername for 'https://github.com': j[0K[?25hd[0Ke[0Km[0Ke[0Kl[0Kl[0Ko[0K[?25l
+error: cannot spawn rpostback-askpass: No such file or directory[0K
+[0K[?25hPassword for 'https://jdemello@github.com':[0K[45G[?25l
+[0K[?25hremote: Invalid username or password.[0K[?25l
+fatal: Authentication failed for 'https://github.com/jdemello/mat4376.git/'[0K
+[0K[?25h[?25l
+[0;32mjdemello@9801-F96FKC2 [0;35m [0;33m/p/IRP/DATA/uottawa/Recteur/Études (VR)/RIP(VRA)/Ad hoc/Ad_hoc_jose/training/proj[0Ke
+ct2[0m[0K
+$[0K[3G[?25h[?25l$ git clone https://github.com/jdemello/mat4376.git[0K[?25h[?25l
+[0K[?25hCloning into 'mat4376'...[0K[?25l
+[0K[?25hfatal: HttpRequestException encountered.[0K[?25l
+   An error occurred while sending the request.[0K
+[0K[?25herror: cannot spawn rpostback-askpass: No such file or directory[0K[?25l
+[0K[?25hUsername for 'https://github.com':[0K[36G[?25lUsername for 'https://github.com': j[0K[?25ho[0K[?25lUsername for 'https://github.com': j[0K[?25hde[0Km[0Ke[0Kl[0Kl[0Ko[0K[?25l
+[0K[?25herror: cannot spawn rpostback-askpass: No such file or directory[0K[?25l
+[0K[?25hPassword for 'https://jdemello@github.com':[0K[45G[6n[6n[6n[?25l
+[0K[?25hremote: Invalid username or password.[0K[?25l
+fatal: Authentication failed for 'https://github.com/jdemello/mat4376.git/'[0K
+[0K[?25h[?25l
+[0;32mjdemello@9801-F96FKC2 [0;35m [0;33m/p/IRP/DATA/uottawa/Recteur/Études (VR)/RIP(VRA)/Ad hoc/Ad_hoc_jose/training/proj[0Ke
+ct2[0m[0K
+$[0K[3G[?25h
