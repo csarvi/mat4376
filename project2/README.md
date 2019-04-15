@@ -4,7 +4,7 @@ Go to `project_analysis/project_analysis.html` for instructions on how to fully 
 
 ## Extract the data for this project
 
-First, set the working directory by specifying the path of the folder <em>project2</em>. This can be done in <em>R Studio</em> by typing on the console:
+First, set the working directory by specifying the path of the folder `project2`. This can be done in <em>R Studio</em> by typing on the console:
 ```
 path <- "PATH/TO/project2"
 setwd(path)
