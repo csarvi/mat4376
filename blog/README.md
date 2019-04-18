@@ -29,7 +29,7 @@ I am going to assume that your working directory is the folder corresponding to 
 
 The first step is to build a classifier. This is not done in `shiny`. In this step, all data manipulation and modelling is done in the `./model` folder.
 
-#### Getting the data
+### Getting the data
 
 The first step is to get the data. We use Andrew Maas' <a href="http://ai.stanford.edu/~amaas/data/sentiment/]">Large Movie Review Dataset</a>. It contains 50,000 movie reviews from the <a href="https://www.imdb.com/">IMDb</a> website. Scores vary from 0 to 5 stars with the increment unit being 0.5 stars --0 being the lowest and 10 being the best. The raw data is separated into two, balanced equal sets of 25,000 --i.e. a 50k training and test set. Our approach is to combine the training and test sets since we want more observations in the training set as opposed to have equal size for both sets. 
 
@@ -37,7 +37,7 @@ Reviews with a score between 4 and 7 are excluded since they tend to be more dub
 
 I also provide a script (`./model/data_processing.R`) that combines the raw data from the Large Movie Review Dataset into a `data.table`. I am not including the raw data in the `./folder` directory but to make this script work, you wil have to [download the data](http://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz) and extract the `.tar` file in the `./model` folder. The directory structure should look like: `./model/aclImdb_v1.var/aclImdb_v1/...`. Alternatively, you can manually change the paths in the script.
 
-#### Document-term matrix trasnformation and model estimation
+### Document-term matrix trasnformation and model estimation
 
 We fit an L1 regularized logistic model with 10-fold cross validation procedure using the `cv.glmnet` function --see the [`glmnet` package vignette](https://web.stanford.edu/~hastie/glmnet/glmnet_alpha.html#spa). The reason for regularization is an attempt to alleviate the large number of features (p) over the number of columns (n). The [`caret`](https://topepo.github.io/caret/data-splitting.html) package is used to partition the data.
 
@@ -148,11 +148,75 @@ Before we start with a brief introduction to `shiny`, let's refresh the funciton
 
 * this text is used to feed the previously trained model to generate a score from 0(negative) to 1 (positive);
 
-<li>Crowdsource data collection by allowing feedback on the results;</li>
-<br>
+* Crowdsource data collection by allowing feedback on the results;
 
-#### Fundamentals of `shiny`
+### The very basic of `shiny`
 
 `shiny` enables `R` users to write interactive web-based application in `R` with little to no HTML, CSS and javascript knowledge. RStudio offers a more in-depth tutorial to `shiny` [here](https://shiny.rstudio.com/tutorial/).
 
----
+On its most general level, a `shiny` app has three components:
+
+* `ui`: this is where the user defines the page layout and its elements;
+
+* `server`: where the "backend" stuff goes;
+
+* a function that executes the app;
+
+You need to have these three elements in place to make your `shiny` app work. For instance, you can put all these three elements in a single script like so:
+
+```r
+ui <- function(){
+  
+}
+
+server <- function(){
+  
+}
+
+shiny::shinyApp(ui=ui, server=server)
+```
+
+Make sure this script is in your current working directory. This app does not work and you should get a "Not Found" message --in case you try to run this code. This is because, at the very minimum, there is no page layout. We need to populate the `ui` with something.
+
+
+#### Designing your `ui`
+
+Fortunately, `shiny` has a suite of page layout functions to pick from. In our app, we are working the `shiny::fluidPage()` function.[^1] This function creates a fluid page layout, with n-rows and a 12-unit wide grid columns for each row. So think about an $n \times 12$ grid layout. If we add the fluid page aspect and include `server <- function(input, output){}`, we have ourselves a (empty) page:
+
+```r
+ui <- function(){
+  shiny::fluidPage()
+}
+
+server <- function(input, output){
+  
+}
+
+shiny::shinyApp(ui=ui, server=server)
+```
+
+Congrats, you've written your first web page with `shiny`. It is important to note that any visual element you want to add to your page needs to go inside `shiny::fluidPage()`.
+
+Now you may want to add a title to your page. No need for HTML, `shiny::titlePanel()` creates a title for you:
+
+```r
+ui <- function(){
+  shiny::fluidPage(
+    shiny::titlePanel("Text classification app")
+  )
+}
+
+server <- function(input, output){
+  
+}
+
+shiny::shinyApp(ui=ui, server=server)
+```
+
+Great, your webpage now has a title but why stop there? Let's transform this into a web app.
+
+#### Widgets
+
+`shiny` has [out-of-the-box widgets](https://shiny.rstudio.com/gallery/widget-gallery.html) for you and we will use them. Widgets are elements in your webpage that interact with the user possibly by sending information back to the server and vice-versa. In other words, widgets are essential to create a web-based app. 
+
+[^1]: aside, note that I  use the `<em>package</em>::<em>function</em>`)
