@@ -181,7 +181,7 @@ Make sure this script is in your current working directory. This app does not wo
 
 #### Designing your `ui`
 
-Fortunately, `shiny` has a suite of page layout functions to pick from. In our app, we are working the `shiny::fluidPage()` function.[^1] This function creates a fluid page layout, with n-rows and a 12-unit wide grid columns for each row. So think about an $n \times 12$ grid layout. If we add the fluid page aspect and include `server <- function(input, output){}`, we have ourselves a (empty) page:
+Fortunately, `shiny` has a suite of page layout functions to pick from. In our app, we are working the `shiny::fluidPage()` function.<sup>1</sup> This function creates a fluid page layout, with n-rows and a 12-unit wide grid columns for each row. So think about an $n \times 12$ grid layout. If we add the fluid page aspect and include `server <- function(input, output){}`, we have ourselves a (empty) page:
 
 ```r
 ui <- function(){
@@ -217,6 +217,7 @@ Great, your webpage now has a title but why stop there? Let's transform this int
 
 #### Widgets
 
-`shiny` has [out-of-the-box widgets](https://shiny.rstudio.com/gallery/widget-gallery.html) for you and we will use them. Widgets are elements in your webpage that interact with the user possibly by sending information back to the server and vice-versa. In other words, widgets are essential to create a web-based app. 
+`shiny` has [out-of-the-box widgets](https://shiny.rstudio.com/gallery/widget-gallery.html) for you and we will use them. Widgets are elements in your webpage that interact with the user. In other words, widgets are essential to create a web-based app. 
 
-[^1]: aside, note that I  use the `<em>package</em>::<em>function</em>`)
+----
+<sup>1</sup> I use the notation `<em>package</em>::<em>function</em>` whenever possible to make clear where that function comes from. Alternatively, you can load the package using `library(<em>package</em>)`
