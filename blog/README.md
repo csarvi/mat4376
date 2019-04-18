@@ -222,4 +222,4 @@ Great, your webpage now has a title but why stop there? Let's transform this int
 
 
 ----
-<sup name="footnote1">1</sup> I use the notation `package::function` whenever possible to make clear where that function comes from. Alternatively, you can load the package using `library(package)`
+<sup id="footnote1">1</sup> I use the notation `package::function` whenever possible to make clear where that function comes from. Alternatively, you can load the package using `library(package)`
