@@ -1,21 +1,22 @@
 # Building an application in `shiny` for binary text sentiment classification
 
-In this tutorial, I will show you how to build a text sentiment classification application in <code>shiny</code>. This app should:
+In this tutorial, I will show you how to build a text sentiment classification application in [`shiny`](https://shiny.rstudio.com/). This app should:
 
 <li>Accept text supplied by the user in <code>shiny</code>'s user interface (UI);</li>
 
 <li>Process this text into trained classification model;</li>
 
-<li>Provide a score varying between 0 and 1 which can be interpreted as the P(Y=1);</li>
+<li>Provide a score varying between 0 (negative) and 1 (positive);</li>
 
 <li>Crowdsource data collection by allowing feedback on the results;</li>
 <br>
 The last component is of particular importance. The user may choose to accept or reject the resulting score which then prompts the application to save this information on a separate dataset. This stored data can then be used to improve the classifier.
 
-Before starting, certify that the following packages are installed: `"shiny", "magrittr", "data.table", "caret", "glmnet", "quanteda", "tidytext", "stringr", "mccr"`. If you are not sure, run this code snippet before starting your analysis (see script `packages.R`:
+Before starting, certify that the following packages are installed: `"shiny"`, `"flexdashboard"`, `"magrittr"`, `"data.table"`, `"caret"`, `"glmnet"`, `"quanteda"`, `"tidytext"`, `"stringr"`, `"mccr"`. If you are not sure, run this code snippet before starting your analysis (see script `packages.R`:
 
 ```r
-pkgs <- c("shiny", "magrittr", "data.table", "caret", "glmnet", "quanteda", "tidytext", "stringr", "mccr")
+### RUN THIS SCRIPT BEFORE STARTING YOUR ANALYSIS - ENSURES ALL PKGS ARE INSTALLED
+pkgs <- c("magrittr", "data.table", "shiny", "flexdashboard", "caret", "glmnet", "quanteda", "tidytext", "stringr", "mccr")
 for(i in seq_along(pkgs)){
  if(!nzchar(system.file(package = pkgs[[i]]))) install.packages(pkgs[[i]])
 }
@@ -24,7 +25,7 @@ rm(pkgs, i)
 
 I am going to assume that your working directory is the folder corresponding to the `blog` directory in this document. If you are in doubt, enter in `R`: `getwd()`. The result should end with `blog`: `"path/to/blog"`. If not, set the working directory to the `blog` folder: `setwd("path/to/blog")`. For [RStudio](https://www.rstudio.com/products/rstudio/download/) users, you can create a [project](https://support.rstudio.com/hc/en-us/articles/200526207-Using-Projects) which will set the directory to the project's folder.
 
-### Building the classifier
+## Building the classifier
 
 The first step is to build a classifier. This is not done in `shiny`. In this step, all data manipulation and modelling is done in the `./model` folder.
 
@@ -112,6 +113,46 @@ mod <- glmnet::cv.glmnet(y = y,
                          family="binomial", type.measure = "class", alpha=1)
 ```
 
-The rest of the code in `./model/train_model.R` fits the model in the test set and calculates the [Matthew Correlation Coefficient](https://en.wikipedia.org/wiki/Matthews_correlation_coefficient) and the [true positive rate](https://en.wikipedia.org/wiki/Sensitivity_and_specificity). We then proceed to save the model to use in the `shiny` app.
+The rest of the code in `./model/train_model.R` fits the model in the test set and calculates the [Matthew's Correlation Coefficient](https://en.wikipedia.org/wiki/Matthews_correlation_coefficient) and the [true positive rate](https://en.wikipedia.org/wiki/Sensitivity_and_specificity). We then proceed to save the model to use in the `shiny` app:
+
+```r
+# create a test set
+testSet <- sparseWords[indexTest, ]
+
+#### test set model validation
+# predict test set using resulting model
+fit <- predict(mod, testSet, type="response")
+
+# use a probability distribution to assign class
+res <- apply(fit, 1, function(y) rbinom(1, 1, y))
+
+# generate an actual and prediction dataset 
+predictions <- data.table(Prediction=res, Actual=data[indexTest, sentiment])
+
+# calculate the MCC 
+mcc <- mccr::mccr(data[indexTest, sentiment], res) # 0.5425818
+
+# calculate true positive rate
+tablePred <- table(predictions)
+tpr <- tablePred[2, 2]/(tablePred[2, 2] + tablePred[1, 2]) # ~ 77%
+
+#### save model
+saveRDS(mod, "model/trained_model.RDS")
+```
+
+## `shiny` app
+
+Before we start with a brief introduction to `shiny`, let's refresh the funcitonality of our app: 
+
+* the user supplies some text;
+
+* this text is used to feed the previously trained model to generate a score from 0(negative) to 1 (positive);
+
+<li>Crowdsource data collection by allowing feedback on the results;</li>
+<br>
+
+#### Fundamentals of `shiny`
+
+`shiny` enables `R` users to write interactive web-based application in `R` with little to no HTML, CSS and javascript knowledge. RStudio offers a more in-depth tutorial to `shiny` [here](https://shiny.rstudio.com/tutorial/).
 
 ---
