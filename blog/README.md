@@ -140,6 +140,14 @@ tpr <- tablePred[2, 2]/(tablePred[2, 2] + tablePred[1, 2]) # ~ 77%
 saveRDS(mod, "model/trained_model.RDS")
 ```
 
+Our model (`mod`) is saved as `./model/trained_model.RDS`. The last thing to do is to feed some unseen text into `mod` for classification. This part is of particular importance since this piece of code will be used in our app. We can write a function that will receive some text as input and it will manipulate this string into a document-term matrix in order to be passed onto the model for classification. Why do we need to create a function? Think of our app. We need some piece of code that performs the same task every time the user supply some text. What does this function needs to do?
+
+1. Receive an input string and process it into a document-matrix;
+
+2. Intersect its features with the matrix used to train the model, **only those words that exist in the training matrix will be preserved**;
+
+3. Feed this matrix into the model and return its score.
+
 ## `shiny` app
 
 Before we start with a brief introduction to `shiny`, let's refresh the funcitonality of our app: 
@@ -150,7 +158,7 @@ Before we start with a brief introduction to `shiny`, let's refresh the funciton
 
 * Crowdsource data collection by allowing feedback on the results;
 
-### The very basic of `shiny`
+### A brief introduction to `shiny`
 
 `shiny` enables `R` users to write interactive web-based application in `R` with little to no HTML, CSS and javascript knowledge. RStudio offers a more in-depth tutorial to `shiny` [here](https://shiny.rstudio.com/tutorial/).
 
@@ -181,7 +189,7 @@ Make sure this script is in your current working directory. This app does not wo
 
 #### Designing your `ui`
 
-Fortunately, `shiny` has a suite of page layout functions to pick from. In our app, we are working the `shiny::fluidPage()` function.<sup>1(#footnote1)</sup> This function creates a fluid page layout, with n-rows and a 12-unit wide grid columns for each row. So think about an $n \times 12$ grid layout. If we add the fluid page aspect and include `server <- function(input, output){}`, we have ourselves a (empty) page:
+Fortunately, `shiny` has a suite of page layout functions to pick from. In our app, we are working the `shiny::fluidPage()` function.<sup>[1](#footnote1)</sup> This function creates a fluid page layout, with n-rows and a 12-unit wide grid columns for each row. So think about an $n \times 12$ grid layout. If we add the fluid page aspect and include `server <- function(input, output){}`, we have ourselves a (empty) page:
 
 ```r
 ui <- function(){
@@ -217,9 +225,28 @@ Great, your webpage now has a title but why stop there? Let's transform this int
 
 #### Widgets
 
-`shiny` has [out-of-the-box widgets](https://shiny.rstudio.com/gallery/widget-gallery.html) for you and we will use them. Widgets are elements in your webpage that interact with the user. In other words, widgets are essential to create a web-based app. In this text classification app, it makes sense to add a text box widget. `shiny` has a widget that does just that:
+`shiny` has [out-of-the-box widgets](https://shiny.rstudio.com/gallery/widget-gallery.html) that we can utilize. Widgets are elements in your webpage that interact with the user. In other words, widgets are essential to create a web-based app. In our text classification app, users need to enter some text for sentiment classification. We use `shiny::textAreaInput()`:
 
+```r
+ui <- function(){
+  shiny::fluidPage(
+    # webpage title
+    shiny::titlePanel("Text classification app"), 
+    # text box input
+    shiny::textAreaInput(inputId = "inputSentence", label=NULL, resize="both", 
+                         placeholder = "Write a sentence for evaluation...", 
+                         width="400px", height = "225px")
+  )
+}
 
+server <- function(input, output){
+  
+}
+
+shiny::shinyApp(ui=ui, server=server)
+```
+
+Take note, every element that goes inside of `...` in `shiny::fluidPage()` needs to be specified in a list-like structure --i.e. separater by a comma. Our webpage now has a title and a text box.   
 
 ----
-<sup id="footnote1">1</sup> I use the notation `package::function` whenever possible to make clear where that function comes from. Alternatively, you can load the package using `library(package)`
+<sup name="footnote1">1</sup> I use the notation `package::function` whenever possible to make clear where that function comes from. Alternatively, you can load the package using `library(package)`
