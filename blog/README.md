@@ -37,7 +37,7 @@ Reviews with a score between 4 and 7 are excluded since they tend to be more dub
 
 I also provide a script (`./model/data_processing.R`) that combines the raw data from the Large Movie Review Dataset into a `data.table`. I am not including the raw data in the `./folder` directory but to make this script work, you wil have to [download the data](http://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz) and extract the `.tar` file in the `./model` folder. The directory structure should look like: `./model/aclImdb_v1.var/aclImdb_v1/...`. Alternatively, you can manually change the paths in the script.
 
-### Document-term matrix trasnformation and model estimation
+### [Document-term matrix trasnformation and model estimation](#dtm_trans)
 
 We fit an L1 regularized logistic model with 10-fold cross validation procedure using the `cv.glmnet` function --see the [`glmnet` package vignette](https://web.stanford.edu/~hastie/glmnet/glmnet_alpha.html#spa). The reason for regularization is an attempt to alleviate the large number of features (p) over the number of columns (n). The [`caret`](https://topepo.github.io/caret/data-splitting.html) package is used to partition the data.
 
@@ -147,6 +147,67 @@ Our model (`mod`) is saved as `./model/trained_model.RDS`. The last thing to do 
 2. Intersect its features with the matrix used to train the model, **only those words that exist in the training matrix will be preserved**;
 
 3. Feed this matrix into the model and return its score.
+
+I saved this function as `./helpers/getScore.R`. Some advice: name the file that contains your custom function with this function's name. This helps you to keep things organized and easily identifiable when you are managing your files. Unsurprisingly, my funciton is called `getScore()` and here it is what it does:
+
+```r
+getScore <- function(mod, dfmMod, txt){
+  # insert text in a dataframe
+  txt <- data.frame(text= txt, 
+                    stringsAsFactors = FALSE)
+  
+  # unnest tokens
+  txt2 <- tidytext::unnest_tokens(txt, word, text)
+  
+  # remove stopwords
+  txt2 <- txt2[which(!(txt2$word %in% stopwords::stopwords("en", "stopwords-iso"))), , drop=FALSE]
+  # remove digits
+  txt2 <- txt2[!grepl(x=txt2$word, pattern = "\\d"), , drop=FALSE]
+  # count remaining words in txt
+  txt2 <- data.frame(table(txt2$word), stringsAsFactors = FALSE)
+  # rename cols
+  names(txt2) <- c("word", "n")
+  # create fake ID for dfm creation
+  txt2$ID <- 1
+  
+  # create dfm matrix
+  dfmNew <- tidytext::cast_dfm(data = txt2, document = ID, term = word, value = n)
+  
+  # intersect with features in the model's document feature matrix
+  dfmNew <- quanteda::dfm_select(dfmNew, dfmMod, valuetype="fixed")
+  
+  # get feature intersection ----
+  res <- predict(mod, dfmNew, type="response")
+  
+  return(res)
+}
+```
+
+First of all, let's understand the arguments of this function. It takes three arguments:
+
+* `mod`: this is the (saved) trained model in `./model/trained_model.RDS`;
+
+* `dfmMod`: the `dfm` matrix used to train your model;
+
+* `txt`: the unseen piece of text supplied by the user.
+
+The first parts of this code is not new to you. It repeats the steps done in the <a name="dtm_trans">training data processing section</a>. The only novel piece of code here is in the matrix feature selection `dfmNew <- quanteda::dfm_select(dfmNew, dfmMod, valuetype="fixed")` and `return(res)`. The first part uses the `quanteda::dfm_select()` function. The first argument is the newly created `dfm` object from `txt`. `dfmMod` is the `pattern` argument. The function understands that `dfmMod` in the `pattern` argument refers to the features of the training set `dfm` object. Finally, `valuetype="fixed"` specifies that the match between features needs to be exact.
+
+To see `getScore()` in action, type this code on your console --make sure the working directory is the blog folder:
+
+```r
+# load function
+source("helpers/getScore.R", local=T)
+
+# import model and training set dfm
+mod <- readRDS("model/trained_model.RDS")
+dfmMod <- readRDS("model/dfm_mod.RDS")
+
+# create a sentence for classification
+txt <- "I love cookie dough and brownie ice-cream!"
+
+getScore(mod=mod, dfmMod=dfmMod, txt=txt) # returns 0.6957222
+```
 
 ## `shiny` app
 
