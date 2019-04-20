@@ -191,9 +191,9 @@ First of all, let's understand the arguments of this function. It takes three ar
 
 * `txt`: the unseen piece of text supplied by the user.
 
-The first parts of this code is not new to you. It repeats the steps done in the <a name="dtm_trans">training data processing section</a>. The only novel piece of code here is in the matrix feature selection `dfmNew <- quanteda::dfm_select(dfmNew, dfmMod, valuetype="fixed")` and `return(res)`. The first part uses the `quanteda::dfm_select()` function. The first argument is the newly created `dfm` object from `txt`. `dfmMod` is the `pattern` argument. The function understands that `dfmMod` in the `pattern` argument refers to the features of the training set `dfm` object. Finally, `valuetype="fixed"` specifies that the match between features needs to be exact.
+The first parts of this code is not new to you. It repeats the steps done in the <a name="dtm_trans">training data processing section</a>. The only novel piece of code here is in the matrix feature selection `dfmNew <- quanteda::dfm_select(dfmNew, dfmMod, valuetype="fixed")`. The first part uses the `quanteda::dfm_select()` function. The first argument is the newly created `dfm` object from `txt`. `dfmMod` is the `pattern` argument in `quanteda::dfm_select()` --type `formals(quanteda::dfm_select)` to see which arguments this function takes. The function understands that `dfmMod` in the `pattern` argument refers to the features of the training set `dfm` object. Finally, `valuetype="fixed"` specifies that the match between features needs to be exact.
 
-To see `getScore()` in action, type this code on your console --make sure the working directory is the blog folder:
+To see `getScore()` in action, type this code on your console --make sure the working directory is the `blog` folder:
 
 ```r
 # load function
@@ -304,10 +304,27 @@ server <- function(input, output){
   
 }
 
-shiny::shinyApp(ui=ui, server=server)
+shiny::shinyApp(ui=ui, server=server, options=list(launch.browser=T))
 ```
 
-Take note, every element that goes inside of `...` in `shiny::fluidPage()` needs to be specified in a list-like structure --i.e. separater by a comma. Our webpage now has a title and a text box.   
+Take note, every element that goes inside of `...` in `shiny::fluidPage()` needs to be specified in a list-like structure --i.e. separated by a comma. Our webpage now has a title and a text box. Running the whole code again should yield a webpage with a text box --feel free to type anything! I also introduced `options=list(launch.browser=T)` to `shiny::shinyApp()`. What it does is exactly what it says: it launches your app on your <strong>default browser</strong>.
+
+By now, we need to introduce the concept of reactivity in `shiny` --see this [reactivity overview](https://shiny.rstudio.com/articles/reactivity-overview.html) for a more in-depth dicussion. In your app, the text input inside the text box is a reactive value and this value can be accessed through the `inputId` label in the function `shiny::textAreaInput(inputId="inputSentence", ...)`. The values in the text box area is reacting to the user's input. This input is changed _in loco_ as the user types something new to the text. You can access the values from the text box in your browser like so:
+
+1. Run your app;
+
+2. Once you are on your browser, type `Ctrl + shift + I` to access the developer tools;
+
+3. Go to "Console" and type `$("#inputSentence").val()`, an empty string (`""`) is returned;
+
+4. Now type something in the textbox and repeat (3); the console should return the text input in the text box;
+
+
+
+Now I am introducing another widget: `shiny::actionButton()`. The purpose of this widget is to trigger some action in your app once a button is pressed. Why do we need an action button? 
+
+##### Reactive values
+
 
 ----
 <sup name="footnote1">1</sup> I use the notation `package::function` whenever possible to make clear where that function comes from. Alternatively, you can load the package using `library(package)`
