@@ -321,7 +321,38 @@ By now, we need to introduce the concept of reactivity in `shiny` --see this [re
 
 ![blog_text_reactive](https://i.imgur.com/6uBbXkT.png)
 
-Now I am introducing another widget: `shiny::actionButton()`. The purpose of this widget is to trigger some action in your app once a button is pressed. Why do we need an action button? 
+
+This is great. Our shiny app is working. We can see that the widget responds to the values inputted by the user. 
+
+Now I am introducing another widget: `shiny::actionButton()`. The purpose of this widget is to trigger some action in your app once a button is pressed. Why do we need an action button? As noticed before, the reactive value in `inputSentence` changes every time the user types something on the text box. Now imagine how slow our app would be if a score had to be calculate every time something is typed inside the text box. The purpose of the action button in our app is to act as a conductor between the user input in the text box and sentiment classification: 
+
+```r
+ui <- function(){
+  shiny::fluidPage(
+    # webpage title
+    shiny::titlePanel("Text classification app"), 
+    # text box input
+    shiny::textAreaInput(inputId = "inputSentence", label=NULL, resize="both", 
+                         placeholder = "Write a sentence for evaluation...", 
+                         width="400px", height = "225px"),
+    # action button
+    shiny::actionButton(inputId = "guessButton", label = "Let me guess!")
+  )
+}
+
+server <- function(input, output){
+}
+
+shiny::shinyApp(ui=ui, server=server, options = list(launch.browser=T))
+```
+
+There is now a button (labelled "Let me guess!") under the textbox. If you press this button, nothing happens. That is because the action button has not been linked to the textbox input as a reactive event. This will be done in `server`.
+
+We borrow the function `gaugeOutput` from `flexdashboard` package. This is an `output` function (see the `output` in `server`) that generates a gauge graph. The `output` function in the `ui` is **usually** a reactive endpoint. That means that the `flexdashboard::gaugeOutput()` in our app is the receiving end of some chain of reactive events. In our particular example, here is the chain: 
+
+> user types something in the textbox --> user presses the action button --> text is shipped to the classifier which in turn produces a score --> the score is fed to the gauge output rendering function.
+
+
 
 ##### Reactive values
 
