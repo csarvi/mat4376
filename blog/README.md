@@ -319,7 +319,7 @@ By now, we need to introduce the concept of reactivity in `shiny` --see this [re
 
 4. Now type something in the textbox and repeat (3); the console should return the text input in the text box;
 
-
+![](https://imgur.com/a/MvlO7SX)
 
 Now I am introducing another widget: `shiny::actionButton()`. The purpose of this widget is to trigger some action in your app once a button is pressed. Why do we need an action button? 
 
