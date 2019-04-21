@@ -37,7 +37,7 @@ Reviews with a score between 4 and 7 are excluded since they tend to be more dub
 
 I also provide a script (`./model/data_processing.R`) that combines the raw data from the Large Movie Review Dataset into a `data.table`. I am not including the raw data in the `./folder` directory but to make this script work, you wil have to [download the data](http://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz) and extract the `.tar` file in the `./model` folder. The directory structure should look like: `./model/aclImdb_v1.var/aclImdb_v1/...`. Alternatively, you can manually change the paths in the script.
 
-### [Document-term matrix trasnformation and model estimation](#dtm_trans)
+### <a name="dtm_trans">Document-term matrix trasnformation and model estimation</a>
 
 We fit an L1 regularized logistic model with 10-fold cross validation procedure using the `cv.glmnet` function --see the [`glmnet` package vignette](https://web.stanford.edu/~hastie/glmnet/glmnet_alpha.html#spa). The reason for regularization is an attempt to alleviate the large number of features (p) over the number of columns (n). The [`caret`](https://topepo.github.io/caret/data-splitting.html) package is used to partition the data.
 
@@ -191,7 +191,7 @@ First of all, let's understand the arguments of this function. It takes three ar
 
 * `txt`: the unseen piece of text supplied by the user.
 
-The first parts of this code is not new to you. It repeats the steps done in the <a name="dtm_trans">training data processing section</a>. The only novel piece of code here is in the matrix feature selection `dfmNew <- quanteda::dfm_select(dfmNew, dfmMod, valuetype="fixed")`. The first part uses the `quanteda::dfm_select()` function. The first argument is the newly created `dfm` object from `txt`. `dfmMod` is the `pattern` argument in `quanteda::dfm_select()` --type `formals(quanteda::dfm_select)` to see which arguments this function takes. The function understands that `dfmMod` in the `pattern` argument refers to the features of the training set `dfm` object. Finally, `valuetype="fixed"` specifies that the match between features needs to be exact.
+The first parts of this code is not new to you. It repeats the steps done in the [training data processing section](#dtm_trans). The only novel piece of code here is in the matrix feature selection `dfmNew <- quanteda::dfm_select(dfmNew, dfmMod, valuetype="fixed")`. The first part uses the `quanteda::dfm_select()` function. The first argument is the newly created `dfm` object from `txt`. `dfmMod` is the `pattern` argument in `quanteda::dfm_select()` --type `formals(quanteda::dfm_select)` to see which arguments this function takes. The function understands that `dfmMod` in the `pattern` argument refers to the features of the training set `dfm` object. Finally, `valuetype="fixed"` specifies that the match between features needs to be exact.
 
 To see `getScore()` in action, type this code on your console --make sure the working directory is the `blog` folder:
 
@@ -348,11 +348,46 @@ shiny::shinyApp(ui=ui, server=server, options = list(launch.browser=T))
 
 There is now a button (labelled "Let me guess!") under the textbox. If you press this button, nothing happens. That is because the action button has not been linked to the textbox input as a reactive event. This will be done in `server`.
 
-We borrow the function `gaugeOutput` from `flexdashboard` package. This is an `output` function (see the `output` in `server`) that generates a gauge graph. The `output` function in the `ui` is **usually** a reactive endpoint. That means that the `flexdashboard::gaugeOutput()` in our app is the receiving end of some chain of reactive events. In our particular example, here is the chain: 
+#### Output functions
+
+We borrow the function `gaugeOutput` from `flexdashboard` package. This is an `output` function (see the `output` in `server`) that generates a gauge graph:
+
+```r
+ui <- function(){
+  shiny::fluidPage(
+    # webpage title
+    shiny::titlePanel("Text classification app"), 
+    # text box input
+    shiny::textAreaInput(inputId = "inputSentence", label=NULL, resize="both", 
+                         placeholder = "Write a sentence for evaluation...", 
+                         width="400px", height = "225px"),
+    # action button
+    shiny::actionButton(inputId = "guessButton", label = "Let me guess!"), 
+    # gauge output
+    flexdashboard::gaugeOutput("scoreGauge", height = "120px")
+  )
+}
+
+server <- function(input, output){
+  
+}
+
+shiny::shinyApp(ui=ui, server=server, options = list(launch.browser=T))
+
+```
+
+The `output` function in the `ui` is **usually** a reactive endpoint. Output function in `ui` are placeholders for some object that will be displayed given some action done by the user. That means that the `flexdashboard::gaugeOutput()` in our app is the receiving end of some chain of reactive events. In our particular example, here is the chain: 
 
 > user types something in the textbox --> user presses the action button --> text is shipped to the classifier which in turn produces a score --> the score is fed to the gauge output rendering function.
 
+There is no gauge graph after running the app. This is expected as no chain has been established in `server` function. Output functions in the `ui` are merely placeholders in this case, it shows where the output appears but all the action happens in `server` that shoots back something to the user interface.
 
+#### `server`
+
+Let's get into business here and show what goes inside `server` given what we already have in `ui`:
+
+```r
+```
 
 ##### Reactive values
 
