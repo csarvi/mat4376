@@ -12,7 +12,7 @@ In this tutorial, I will show you how to build a text sentiment classification a
 <br>
 The last component is of particular importance. The user may choose to accept or reject the resulting score which then prompts the application to save this information on a separate dataset. This stored data can then be used to improve the classifier.
 
-Before starting, certify that the following packages are installed: `"shiny"`, `"flexdashboard"`, `"magrittr"`, `"data.table"`, `"caret"`, `"glmnet"`, `"quanteda"`, `"tidytext"`, `"stringr"`, `"mccr"`. If you are not sure, run this code snippet before starting your analysis (see script `packages.R`:
+Before starting, certify that the following packages are installed: `"shiny"`, `"flexdashboard"`, `"magrittr"`, `"data.table"`, `"caret"`, `"glmnet"`, `"quanteda"`, `"tidytext"`, `"stringr"`, `"mccr"`. If you are not sure, run this code snippet before starting your analysis (see script [`packages.R`](https://github.com/jdemello/mat4376/blob/master/blog/packages.R):
 
 ```r
 ### RUN THIS SCRIPT BEFORE STARTING YOUR ANALYSIS - ENSURES ALL PKGS ARE INSTALLED
@@ -386,7 +386,9 @@ No gauge graph is displayed after running the app --expected since no chain has 
 
 #### Pre-loaded objects
 
-Before we move on to `server`, there is something else you may be asking yourself: how do I load the classifier in the app? You can pre-load and create any `R` object before running `ui` or `server`. In this example, some content is loaded before `ui`. Usually, you want to load packages, `source()` functions, read and create objects. The content is defined before running your app --which means that this code runs only once each time you run the app. It is good practice to break your code into multiple scripts whenever you can discern the different tasks in your app. I created an `R`  script called `loadContents.R`. This script:
+Before we move on to `server`, there is something else you may be asking yourself: how do I load the classifier in the app? You can pre-load and create any `R` object before running `ui` or `server`. In this example, some content is loaded before `ui`. Usually, you want to load packages, `source()` functions, read and create objects. The content is defined before running your app --which means that this code runs only once each time you run the app. **Be mindful of overheading**: adding a lot of stuff in the pre-loading stage will cause delay in starting your app.
+
+It is good practice to break your code into multiple scripts whenever you can discern the different tasks in your app. I like to put these scripts in a folder called `helpers`. Anything that goes into `helpers` is an ancillary function that helps to run the main task at hand. The `R` script  [`loadContents.R`](https://github.com/jdemello/mat4376/blob/master/blog/helpers/loadContents.R):
 
 * loads `shiny` and `glmnet`;
 
@@ -394,13 +396,58 @@ Before we move on to `server`, there is something else you may be asking yoursel
 
 * loads the [classifier](#trained_model) and the [training dtm](#dfm_mod) --both are used as arguments in `getScore()`; 
 
-See [`mat4376/blog/helpers/loadContents.R`](https://github.com/jdemello/mat4376/blob/master/blog/helpers/loadContents.R).
+Finally, we place the code before defining `ui`:
+
+```r
+# load contents ----
+source("helpers/loadContents.R")
+
+# Define UI ----
+ui <- function(){
+  ### ui code goes here ####
+  ...
+}
+```
 
 #### `server`
 
-Let's get into business here and show what goes inside `server` given what we already have in `ui`:
+Let's get into business here and show what goes inside `server`:
 
 ```r
+server <- function(input, output, session) {
+  
+  # text - to be inserted in the dataset ----
+  txtIn <- shiny::eventReactive(
+    input$guessButton, {
+      return(input$inputSentence)
+    }
+  )
+  
+  # calculate score - to be inserted in the dataset ----
+  score <- shiny::eventReactive(
+    input$guessButton, {
+      txt <- input$inputSentence
+      score <- getScore(mod=mod, dfmMod=dfmMod, txt=txt)
+      return(score)
+    }
+  )
+  
+  # gauge rendering ----
+  output$scoreGauge <- flexdashboard::renderGauge({
+    flexdashboard::gauge(
+      round(100 * score(), digits = 1), 
+      symbol = "%",
+      min=0,
+      max=100,
+      sectors = flexdashboard::gaugeSectors(
+        success=c(70, 100), 
+        warning=c(50,70), 
+        danger = c(0,50),
+        colors = c("#3CB371", "#FF7F50", "#FF69B4")
+      )
+    )
+  })
+}
 ```
 
 ##### Reactive values
