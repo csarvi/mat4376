@@ -217,7 +217,7 @@ Before we start with a brief introduction to `shiny`, let's refresh the funciton
 
 * this text is used to feed the previously trained model to generate a score from 0(negative) to 1 (positive);
 
-* Crowdsource data collection by allowing feedback on the results;
+* Crowdsource data collection by allowing feedback by the user;
 
 ### A brief introduction to `shiny`
 
@@ -245,7 +245,9 @@ server <- function(){
 shiny::shinyApp(ui=ui, server=server)
 ```
 
-Make sure this script is in your current working directory. This app does not work and you should get a "Not Found" message --in case you try to run this code. This is because, at the very minimum, there is no page layout. We need to populate the `ui` with something.
+Make sure this script is in your current working directory. By running the code above, you should get a "Not Found" message, which is fine since your page has no layout. We need to populate the `ui` with something.
+
+If you app grows on complexity, it is often a good idea to treat these three elements in separate scripts --this how I structured the scripts on this repo. In this case, three separate scripts are created: `ui.R`, `server.R` and `app.R`. Make sure these scripts are located in your current working directory. `ui.R` and `server.R` obey the same structure as shown above except that you don't need `shiny::sinyApp(...)` anymore. Instead, `app.R` contains one line: `shiny::runApp(launch.browser=T)`. Executing `app.R` starts the app.
 
 
 #### Designing your `ui`
@@ -346,11 +348,11 @@ server <- function(input, output){
 shiny::shinyApp(ui=ui, server=server, options = list(launch.browser=T))
 ```
 
-There is now a button (labelled "Let me guess!") under the textbox. If you press this button, nothing happens. That is because the action button has not been linked to the textbox input as a reactive event. This will be done in `server`.
+There is now a button (labelled "Let me guess!") under the textbox. If you press this button, nothing happens --reason: the action button has not been linked to the textbox input as a reactive event. This will be done in `server`.
 
 #### Output functions
 
-We borrow the function `gaugeOutput` from `flexdashboard` package. This is an `output` function (see the `output` in `server`) that generates a gauge graph:
+We borrow the function `gaugeOutput` from the [`flexdashboard`](https://rmarkdown.rstudio.com/flexdashboard/using.html#gauges) package. This is an `output` function (see the `output` in `server`) that generates a gauge graph:
 
 ```r
 ui <- function(){
@@ -376,11 +378,15 @@ shiny::shinyApp(ui=ui, server=server, options = list(launch.browser=T))
 
 ```
 
-The `output` function in the `ui` is **usually** a reactive endpoint. Output function in `ui` are placeholders for some object that will be displayed given some action done by the user. That means that the `flexdashboard::gaugeOutput()` in our app is the receiving end of some chain of reactive events. In our particular example, here is the chain: 
+An `output` function in the `ui` is **usually** a reactive endpoint. Output functions in `ui` are placeholders for some object that will be displayed given some action done by the user. That means that the `flexdashboard::gaugeOutput()` in our app is the receiving end of some chain of reactive events. In our particular example, here is the chain: 
 
 > user types something in the textbox --> user presses the action button --> text is shipped to the classifier which in turn produces a score --> the score is fed to the gauge output rendering function.
 
-There is no gauge graph after running the app. This is expected as no chain has been established in `server` function. Output functions in the `ui` are merely placeholders in this case, it shows where the output appears but all the action happens in `server` that shoots back something to the user interface.
+No gauge graph is displayed after running the app --expected since no chain has been established in `server` function. Output functions in the `ui` are merely placeholders in this case, it shows where the output appears but all the action happens in `server` that shoots back something to the user interface.
+
+#### Pre-loaded objects
+
+Before we move on to `server`, there something else you may be asking yourself: how do I load the classifier in the app? You can pre load and create any `R` object before running `ui` or `server`. In this example, some content is loaded before `ui` is defined. See 
 
 #### `server`
 
