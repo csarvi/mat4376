@@ -7,11 +7,7 @@ In this tutorial, I will show you how to build a text sentiment classification a
 <li>Process this text into trained classification model;</li>
 
 <li>Provide a score varying between 0 (negative) and 1 (positive);</li>
-
-<li>Crowdsource data collection by allowing feedback on the results;</li>
 <br>
-The last component is of particular importance. The user may choose to accept or reject the resulting score which then prompts the application to save this information on a separate dataset. This stored data can then be used to improve the classifier.
-
 Before starting, certify that the following packages are installed: `"shiny"`, `"flexdashboard"`, `"magrittr"`, `"data.table"`, `"caret"`, `"glmnet"`, `"quanteda"`, `"tidytext"`, `"stringr"`, `"mccr"`. If you are not sure, run this program before starting your analysis (see script [`packages.R`](https://github.com/jdemello/mat4376/blob/master/blog/helpers/packages.R):
 
 ```r
@@ -27,21 +23,21 @@ I am going to assume that your working directory is the folder corresponding to 
 
 ## Building the classifier
 
-The first step is to build a classifier. This is not done in `shiny`. In this step, all data manipulation and modelling is done in the `./model` folder.
+The first step is to build a classifier. This is not done in `shiny`. In this step, all data manipulation and modelling is done in the [`model`](https://github.com/jdemello/mat4376/tree/master/blog/model) folder.
 
 ### Getting the data
 
 The first step is to get the data. We use Andrew Maas' <a href="http://ai.stanford.edu/~amaas/data/sentiment/]">Large Movie Review Dataset</a>. It contains 50,000 movie reviews from the <a href="https://www.imdb.com/">IMDb</a> website. Scores vary from 0 to 5 stars with the increment unit being 0.5 stars --0 being the lowest and 10 being the best. The raw data is separated into two, balanced equal sets of 25,000 --i.e. a 50k training and test set. Our approach is to combine the training and test sets since we want more observations in the training set as opposed to have equal size for both sets. 
 
-Reviews with a score between 4 and 7 are excluded since they tend to be more dubious (neutral) in sentiment. We consider reviews with a score between 0 and 3 to be negative whereas a score between 8 and 10 is positive. We end up with 39,866 reviews to train and test our model. We are building a classifier for a binary variable. In our dataset, 0 and 1 denote negative and positive sentiment respectively. For convenience, this data is saved in `./model/processed_data.RDS`. 
+Reviews with a score between 4 and 7 are excluded since they tend to be more dubious (neutral) in sentiment. We consider reviews with a score between 0 and 3 to be negative whereas a score between 8 and 10 is positive. We end up with 39,866 reviews to train and test our model. We are building a classifier for a binary variable. In our dataset, 0 and 1 denote negative and positive sentiment respectively. For convenience, this data is saved in `model/processed_data.RDS`. 
 
-I also provide a script (`./model/data_processing.R`) that combines the raw data from the Large Movie Review Dataset into a `data.table`. I am not including the raw data in the `./folder` directory but to make this script work, you wil have to [download the data](http://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz) and extract the `.tar` file in the `./model` folder. The directory structure should look like: `./model/aclImdb_v1.var/aclImdb_v1/...`. Alternatively, you can manually change the paths in the script.
+I also provide a script ([`model/data_processing.R`](https://github.com/jdemello/mat4376/tree/master/blog/model/data_processing.R)) that combines the raw data from the Large Movie Review Dataset into a `data.table`. I am not including the raw data in the [`./model`](https://github.com/jdemello/mat4376/tree/master/blog/model) directory but to make this script work, you wil have to [download the data](http://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz) and extract the `.tar` file in the [`./model`](https://github.com/jdemello/mat4376/tree/master/blog/model) folder. The directory structure should look like: `./model/aclImdb_v1.var/aclImdb_v1/...`. Alternatively, you can manually change the paths in the script.
 
 ### <a name="dtm_trans">Document-term matrix trasnformation and model estimation</a>
 
 We fit an L1 regularized logistic model with 10-fold cross validation procedure using the `cv.glmnet` function --see the [`glmnet` package vignette](https://web.stanford.edu/~hastie/glmnet/glmnet_alpha.html#spa). The reason for regularization is an attempt to alleviate the large number of features (p) over the number of columns (n). The [`caret`](https://topepo.github.io/caret/data-splitting.html) package is used to partition the data.
 
-The file `./model/train_model.R` shows the model building process including the transformation of the combined sentiment dataset into a [document-term matrix](https://en.wikipedia.org/wiki/Document-term_matrix). 
+The file [`./model/train_model.R`](https://github.com/jdemello/mat4376/tree/master/blog/model/train_model.R) shows the model building process including the transformation of the combined sentiment dataset into a [document-term matrix](https://en.wikipedia.org/wiki/Document-term_matrix). 
 
 First, we load the processed movie review `data` and create an `ID` column that will be used in the matrix transformation process. We are using `data.table` and `magrittr` for data manipulation.
 
@@ -113,7 +109,7 @@ mod <- glmnet::cv.glmnet(y = y,
                          family="binomial", type.measure = "class", alpha=1)
 ```
 
-The rest of the code in `./model/train_model.R` fits the model in the test set and calculates the [Matthew's Correlation Coefficient](https://en.wikipedia.org/wiki/Matthews_correlation_coefficient) and the [true positive rate](https://en.wikipedia.org/wiki/Sensitivity_and_specificity). We then proceed to save the model to use in the `shiny` app:
+The rest of the code in [`./model/train_model.R`](https://github.com/jdemello/mat4376/tree/master/blog/model/train_model.R) fits the model in the test set and calculates the [Matthew's Correlation Coefficient](https://en.wikipedia.org/wiki/Matthews_correlation_coefficient) and the [true positive rate](https://en.wikipedia.org/wiki/Sensitivity_and_specificity). We then proceed to save the model to use in the `shiny` app:
 
 ```r
 # create a test set
@@ -148,7 +144,7 @@ Our model (`mod`) is saved as <a name="trained_model">`./model/trained_model.RDS
 
 3. Feed this matrix into the model and return its score.
 
-I saved this function as `./helpers/getScore.R`. Some advice: name the file that contains your custom function with this function's name. This helps you to keep things organized and easily identifiable when you are managing your files. Unsurprisingly, my funciton is called <a name="getScore">`getScore()`</a> and here it is what it does:
+I saved this function as [`./helpers/getScore.R`](https://github.com/jdemello/mat4376/tree/master/blog/helpers/getScore.R). Some advice: name the file that contains your custom function with this function's name. This helps you to keep things organized and easily identifiable when you are managing your files. Unsurprisingly, my funciton is called <a name="getScore">`getScore()`</a> and here it is what it does:
 
 ```r
 getScore <- function(mod, dfmMod, txt){
@@ -247,7 +243,7 @@ shiny::shinyApp(ui=ui, server=server)
 
 Make sure this script is in your current working directory. By running the code above, you should get a "Not Found" message, which is fine since your page has no layout. We need to populate the `ui` with something.
 
-If you app grows on complexity, it is often a good idea to treat these three elements in separate scripts --this how I structured the scripts on this repo. In this case, three separate scripts are created: `ui.R`, `server.R` and `app.R`. Make sure these scripts are located in your current working directory. `ui.R` and `server.R` obey the same structure as shown above except that you don't need `shiny::sinyApp(...)` anymore. Instead, `app.R` contains one line: `shiny::runApp(launch.browser=T)`. Executing `app.R` starts the app.
+If you app grows on complexity, it is often a good idea to treat these three elements in separate scripts --this how I structured the scripts on this repo. In this case, three separate scripts are created: [`ui.R`](https://github.com/jdemello/mat4376/tree/master/blog/ui.R), [`server.R`](https://github.com/jdemello/mat4376/tree/master/blog/server.R) and [`app.R`](https://github.com/jdemello/mat4376/tree/master/blog/app.R). Make sure these scripts are located in your current working directory. `ui.R` and `server.R` have the same structure as shown above except that you don't need `shiny::sinyApp(...)` anymore. Instead, `app.R` contains one line: `shiny::runApp(launch.browser=T)`. Executing `app.R` starts the app.
 
 
 #### Designing your `ui`
