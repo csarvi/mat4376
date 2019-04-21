@@ -386,7 +386,7 @@ No gauge graph is displayed after running the app --expected since no chain has 
 
 #### Pre-loaded objects
 
-Before we move on to `server`, there something else you may be asking yourself: how do I load the classifier in the app? You can pre load and create any `R` object before running `ui` or `server`. In this example, some content is loaded before `ui` is defined. See [`mat4376/blog/helpers/loadContents.R`](mat4376/blog/helpers/loadContents.R)
+Before we move on to `server`, there something else you may be asking yourself: how do I load the classifier in the app? You can pre load and create any `R` object before running `ui` or `server`. In this example, some content is loaded before `ui` is defined. See [`mat4376/blog/helpers/loadContents.R`](https://github.com/jdemello/mat4376/blob/master/blog/helpers/loadContents.R).
 
 #### `server`
 
