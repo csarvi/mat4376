@@ -12,7 +12,7 @@ In this tutorial, I will show you how to build a text sentiment classification a
 <br>
 The last component is of particular importance. The user may choose to accept or reject the resulting score which then prompts the application to save this information on a separate dataset. This stored data can then be used to improve the classifier.
 
-Before starting, certify that the following packages are installed: `"shiny"`, `"flexdashboard"`, `"magrittr"`, `"data.table"`, `"caret"`, `"glmnet"`, `"quanteda"`, `"tidytext"`, `"stringr"`, `"mccr"`. If you are not sure, run this code snippet before starting your analysis (see script [`packages.R`](https://github.com/jdemello/mat4376/blob/master/blog/packages.R):
+Before starting, certify that the following packages are installed: `"shiny"`, `"flexdashboard"`, `"magrittr"`, `"data.table"`, `"caret"`, `"glmnet"`, `"quanteda"`, `"tidytext"`, `"stringr"`, `"mccr"`. If you are not sure, run this program before starting your analysis (see script [`packages.R`](https://github.com/jdemello/mat4376/blob/master/blog/helpers/packages.R):
 
 ```r
 ### RUN THIS SCRIPT BEFORE STARTING YOUR ANALYSIS - ENSURES ALL PKGS ARE INSTALLED
@@ -389,6 +389,8 @@ No gauge graph is displayed after running the app --expected since no chain has 
 Before we move on to `server`, there is something else you may be asking yourself: how do I load the classifier in the app? You can pre-load and create any `R` object before running `ui` or `server`. In this example, some content is loaded before `ui`. Usually, you want to load packages, `source()` functions, read and create objects. The content is defined before running your app --which means that this code runs only once each time you run the app. **Be mindful of overheading**: adding a lot of stuff in the pre-loading stage will cause delay in starting your app.
 
 It is good practice to break your code into multiple scripts whenever you can discern the different tasks in your app. I like to put these scripts in a folder called `helpers`. Anything that goes into `helpers` is an ancillary function that helps to run the main task at hand. The `R` script  [`loadContents.R`](https://github.com/jdemello/mat4376/blob/master/blog/helpers/loadContents.R):
+
+* check for package requirements --[`package.R`](https://github.com/jdemello/mat4376/blob/master/blog/helpers/packages.R)
 
 * loads `shiny` and `glmnet`;
 
