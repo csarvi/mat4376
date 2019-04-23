@@ -414,14 +414,7 @@ Let's get into business here and show what goes inside `server`:
 ```r
 server <- function(input, output, session) {
   
-  # text - to be inserted in the dataset ----
-  txtIn <- shiny::eventReactive(
-    input$guessButton, {
-      return(input$inputSentence)
-    }
-  )
-  
-  # calculate score - to be inserted in the dataset ----
+  # calculate score ----
   score <- shiny::eventReactive(
     input$guessButton, {
       txt <- input$inputSentence
@@ -448,8 +441,10 @@ server <- function(input, output, session) {
 }
 ```
 
-##### Reactive values
+In `server()`, `input` and `output` are mandatory. The last parameter (`session`) is optional. Including this parmaters allows you to access information pertaining the session. It is not useful in this example but I am putting it out there so you are aware of it. For instance, you may want to collect some data from the user who is accesssing your app. Let's say that you may want to receive feedback from the sentiment score. Once the score is displayed, the user can reject or accept the sentiment. It would be ideal to assign an ID to each time a session is run in your app so that you know the instance of the classification score feedback. You can use `session$token` to get that.
 
+
+This is a simple `server` function. However, it includes the important concept of **[reactivity](https://shiny.rstudio.com/articles/reactivity-overview.html)**. To make our 
 
 ----
 <sup name="footnote1">1</sup> I use the notation `package::function` whenever possible to make clear where that function comes from. Alternatively, you can load the package using `library(package)`

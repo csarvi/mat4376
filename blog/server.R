@@ -1,13 +1,6 @@
 server <- function(input, output, session) {
   
-  # text - to be inserted in the dataset ----
-  txtIn <- shiny::eventReactive(
-    input$guessButton, {
-      return(input$inputSentence)
-    }
-  )
-  
-  # calculate score - to be inserted in the dataset ----
+  # calculate score ----
   score <- shiny::eventReactive(
     input$guessButton, {
       txt <- input$inputSentence
