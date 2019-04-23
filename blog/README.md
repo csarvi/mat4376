@@ -444,7 +444,52 @@ server <- function(input, output, session) {
 In `server()`, `input` and `output` are mandatory. The last parameter (`session`) is optional. Including this parmaters allows you to access information pertaining the session. It is not useful in this example but I am putting it out there so you are aware of it. For instance, you may want to collect some data from the user who is accesssing your app. Let's say that you may want to receive feedback from the sentiment score. Once the score is displayed, the user can reject or accept the sentiment. It would be ideal to assign an ID to each time a session is run in your app so that you know the instance of the classification score feedback. You can use `session$token` to get that.
 
 
-This is a simple `server` function. However, it includes the important concept of **[reactivity](https://shiny.rstudio.com/articles/reactivity-overview.html)**. To make our 
+##### Reactivity
+
+This is a simple `server` function. However, it includes the important concept of **[reactivity](https://shiny.rstudio.com/articles/reactivity-overview.html)**. Recall that we have an action button with its function being to trigger text classification. The user may write many sentences on the text box but nothing will happen until they press the action button. If that wasn't the case, every time the user typed something on the text box, the function `getScore()` would calculate a score. So what we have here in the first part of `server`:
+
+```r
+# calculate score ----
+  score <- shiny::eventReactive(
+    input$guessButton, {
+      txt <- input$inputSentence
+      score <- getScore(mod=mod, dfmMod=dfmMod, txt=txt)
+      return(score)
+    }
+  )
+```
+
+In here, we use the function `shiny::eventReactive()` to signal that the resulting score from the function `getScore()` will only be calculated (and returned) when there is a change to `input$guessButton`. Recall that in `ui` the action button function (`shiny::actionButton()`) has a parameter `inputId`. Whatever string you type on `inputId`, this will be the label used by you to access the values of a widget on the server side. `shiny` uses the `input$`*`inputId`* nomenclature in `server` to access the values of a  widget.
+
+Back to `shiny::eventReactive()`, the first argument is `eventExpr` which in our case is `input$guessButton`. This argument is the event that triggers the event. Every time the user presses the action button, `input$guessButton` changes. Every time `input$guessButton` changes, an event triggers --i.e. the calculation of the classification score. 
+
+The second argument of `shiny::eventReactive()` is `valueExpr`. We enclose in `{}` the event has many actions. Just like functions, you can do something like `normalizer <- function(x) (x-mean(x))/sd(x)` in one line and dispense `{}`. However, if you want to perform action on multiple lines, you need to use `{}`. Hence, in `shiny::eventReactive()`, we describe in `valueExpr` the actions of the event and use `return(score)` to return the final object. The new object `score` is a reactive expression. This object is accessed in `shiny` following round brackets --i.e. `score()`.
+
+The final part of `server` is:
+
+```r
+# gauge rendering ----
+  output$scoreGauge <- flexdashboard::renderGauge({
+    flexdashboard::gauge(
+      round(100 * score(), digits = 1), 
+      symbol = "%",
+      min=0,
+      max=100,
+      sectors = flexdashboard::gaugeSectors(
+        success=c(70, 100), 
+        warning=c(50,70), 
+        danger = c(0,50),
+        colors = c("#3CB371", "#FF7F50", "#FF69B4")
+      )
+    )
+  })
+```
+
+This part renders the gauge chart `flexdashboard::gaugeOutput()` in `ui`. The first part --`output$scoreGauge`-- tells `shiny` the object for which there is an output. Looking back at `flexdashboard::gaugeOutput()`, `scoreGauge` is the label for the output in `ui`. Similar to the way we access values from widgets in the `ui` with `input`, `shiny` has a special nomenclature to assing output objects in `server`: `output$`*`outputId`*. The `flexdashboard::renderGauge()` does precisely what it says: render the gauge chart output. The first part of `flexdashboard::renderGauge()` is an expession that generates the gauge which in turn is `flexdashboard::gauge()`. The only important thing here to be noted is the part `round(100 * score(), digits = 1)`. Note that `score()` reactive expression. This is the score calculated in the first block of code in `server`. Because `score()` is a reactive expression from `shiny::eventReactive()`, it needs to be accessed with round brackets `()`.
+
+### Running your app
+
+To finalize, run your app with the scrip `app.R` and voilá. 
 
 ----
 <sup name="footnote1">1</sup> I use the notation `package::function` whenever possible to make clear where that function comes from. Alternatively, you can load the package using `library(package)`
