@@ -1,4 +1,4 @@
-binnarize <- function(data, cols_to_bin){
+binarize <- function(data, cols_to_bin){
   # check if package is loaded ----
   if(!any(.packages() %in% "magrittr")) library(magrittr)
   if(!any(.packages() %in% "data.table")) library(data.table)

@@ -1,56 +1,33 @@
-getPlaylistData <- function(spotify_client_id=NULL,
-                            spotify_client_secret=NULL,
-                            spotify_id=NULL,
-                            user_name=NULL,
-                            playlistName=NULL){
-  # package installation check ----
-  source("helpers/checkPkg.R", local = T)
-  pkgs <- c("magrittr", "data.table", "crayon", "devtools")
-  for(i in seq_along(pkgs)){
-    checkPkg(pkg=pkgs[[i]])
-  }
-  rm(i, pkgs)
+getPlaylistData <- function(spotify_id, playlistName){
+  # load packages (if necessary) ----
+  if(any(.packages() %in% "magrittr")) library(magrittr)
+  if(any(.packages() %in% "data.table")) library(data.table)
+  if(any(.packages() %in% "spotifyr")) library(spotifyr)
   
-  if(!nzchar(system.file(package = "spotifyr"))){
-    ans <- menu(choices = c("Y", "N"),
-                title = "Package spotifyr not installed in your system.\n\nDo you wish to install it? (The function will thrown an error if 'N')")
-    if(ans == 2L) stop("Execution aborted.")
-    devtools::install_github('charlie86/spotifyr')
-  }
+  # helper lookup ----
+  # columns to remove...
+  colsToRm <- unique(c("playlist_name", "playlist_uri", "playlist_tracks_url", 
+                       "playlist_num_tracks", "snapshot_id", "playlist_img", 
+                       "album_name", "track_added_at", "track_preview_url", 
+                       "track_open_spotify_url", "is_collaboration", 
+                       "album_release_date", "album_popularity", "track_number", 
+                       "disc_number", "track_popularity", "track_preview_url", "track_open_spotify_url", 
+                       "album_uri", "album_img", "album_type", "artist_uri", "album_release_year", "track_uri"))
   
-  # check args ----
-  # check for args that can't be null first
-  if(is.null(user_name) || is.null(playlistName)) stop("You need to supply something to \"user_name\" and/or \"playlistName\".")
-  # check for the other args, if null, try to find it in the system
-  if(is.null(spotify_client_id) || is.null(spotify_client_secret)){
-    if(!nzchar(Sys.getenv("SPOTIFY_CLIENT_ID"))) stop("Supply your spotify client ID to the system: 'Sys.setenv(SPOTIFY_CLIENT_ID='secret_id').")
-    if(!nzchar(Sys.getenv("SPOTIFY_CLIENT_SECRET"))) stop("Supply your spotify client secret to the system: 'Sys.setenv(SPOTIFY_CLIENT_SECRET='secret_id').")
-  }
-  # register id and secret (if id or secret NOT null)
-  if(!is.null(spotify_client_id) || !is.null(spotify_client_secret)){
-    Sys.setenv(SPOTIFY_CLIENT_ID = spotify_client_id)
-    Sys.setenv(SPOTIFY_CLIENT_SECRET = spotify_client_secret)  
-  }
-  # set id to default id associated with spotify client id and secret
-  if(is.null(spotify_id)){
-    if(nzchar(Sys.getenv("SPOTIFY_CLIENT_ID")) && nzchar(Sys.getenv("SPOTIFY_CLIENT_SECRET"))) spotify_id <- spotifyr::get_my_profile()[, "id"] # access profile
-  }
+  # access playlist's songs and artists -----
+  playlistName <- tolower(playlistName) # playlist name to lower
   
-  # checking other args----
-  if(missing(user_name)) stop("You need to supply a character vector for \"user_name\".\n\nThis argument creates a column in the final data output with the name of the user (e.g. \"Joe\", \"Cesar\".")
-  if(missing(playlistName)) stop("You need to supply a string for \"playlistName\".\n\nThis argument searchs the playlist in the user's playlist library.")
-  playlistName <- tolower(playlistName)
+  myPlaylists <- spotifyr::get_user_playlists(spotify_id) # get list of playlists
+  myPlaylists[, "playlist_name"] <- tolower(myPlaylists[["playlist_name"]]) # to lower
   
-  # load helpers ----  
-  source("data/consolidateData.R", local=T) # pull all the data
+  uri <- myPlaylists[which(myPlaylists$playlist_name == playlistName),][["playlist_uri"]] # select list of interest
+  playlistFt <- spotifyr::get_playlist_audio_features(spotify_id, uri) # get table with playlist audio features
+  data.table::setDT(playlistFt) # make into DT
   
-  # load libraries ----
-  if(any(.packages() %in% "magrittr")) suppressPackageStartupMessages(library(magrittr))
-  if(any(.packages() %in% "data.table")) suppressPackageStartupMessages(library(data.table))
-
-  # get consolidated data from spotify
-  master <- consolidateData(spotify_id = spotify_id, playlistName = playlistName)
-  master[, user_name:=user_name]
+  # remove columns ----
+  cols <- names(playlistFt)[which(names(playlistFt) %in% colsToRm)]
+  playlistFt[, (cols) := NULL] # remove cols
+  rm(cols)
   
-  return(master)
+  return(playlistFt)
 }
