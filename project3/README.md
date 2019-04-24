@@ -1,7 +1,10 @@
 Clustering Exercise with Spotify Data
 ================
 
-## `data`
+## `data` folder
+
+The `data` folder contains all the steps necessary to reproduce the data
+pulling and transformation step in this project.
 
 We use the package [`spotifyr`](https://github.com/charlie86/spotifyr)
 to pull audio features from playlists. `spotifyr` allows the pulling of
@@ -34,14 +37,14 @@ if(!nzchar(system.file(package = "spotifyr"))){
 }
 ```
 
-You also can’t run `process_data.R` without providing your client ID and
-secret. Make sure you replace the `x`s in `process_data.R` with the
-client ID and client secret respectively. Then execute the command
+Note that you can’t run `process_data.R` without providing your client
+ID and secret. Make sure you replace the `x`s in `process_data.R` with
+the client ID and client secret respectively. Then execute the command
 `spotifyr::get_spotify_authorization_code()` to exchange the
 authorization code for the token and to create a file named
 `.httr-oauth` in the current working directory. This file caches the
-token so then next time you want to pull data from spotify you don’t
-need to go through the code-for-token exchange process (assuming
+token so then next time you want to pull data from spotify’s API you
+don’t need to go through the code-for-token exchange process (assuming
 `.httr-oauth` is located in your current working directory).
 
 ``` r
@@ -53,20 +56,31 @@ spotifyr::get_spotify_authorization_code()
 ```
 
 Once you are done with this process, you are ready to start pulling the
-data. This script may ask you to install some packages required for this
-part. A dynamic menu will appear on your `R` console. If you choose not
-to install these packages, the process will not complete.
+data. Running `process_data.R` may require you to install some packages
+along the wa. A dynamic menu will appear on your `R` console. If you
+choose not to install these packages, the data replication process will
+not be successful. We saved the transformed dataset in `data/data.RDS`
+in case you wish not to go through the data replication process.
 
-### Data description
+## Data description
 
 `process_data.R` uses two ancillary functions: `consolidateData()` and
 `binarize()`. In `consolidateData()`, we pull audio features from an
 user’s playlist, delete some columns and add a label for the user name
 from which the playlist’s information is being pulled. Then we proceed
 to use `binarize()` which transforms some of the audio features in
-binary variables with multiple columns. `binarize()` also scales some
-features into values ranging from 0 to 1. Below is a list of audio
-features considered in this exercise\[1\]:
+binary variables with multiple columns (if more than two categories).
+`binarize()` also scales some features into values ranging from 0 to 1.
+
+We aggregate audio features from three playlists:
+
+  - Ceasr’s playlist [“Created in R”]()
+
+  - Jose’s playlist [“Power/jangle pop”]();
+
+  - Maia’s playlist [“favs extended”]().
+
+Below is a list of audio features included in this exercise\[1\]:
 
   - `acousticness`: spotify doesn’t provide many details but this is a
     confidence measure varying from `0.0` to `1.0` with `1.0`
@@ -116,7 +130,7 @@ features considered in this exercise\[1\]:
   - `valence`: this is a score between `0.0` and `1.0` measuring the
     musical positiveness. Tracks closer to `1.0` tend to be more joyful.
     For instance, Nirvana’s soundtracks tend to be more sad, darker than
-    the punk rock band The Offspring;
+    the punk rock band The Offspring.
 
 ![](./img/nirvana_valence.png)
 
