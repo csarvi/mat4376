@@ -48,11 +48,11 @@ Once you are done with this process, you are ready to start pulling the data. Ru
 
 We aggregate audio features from three playlists:
 
-* Ceasr's playlist ["Created in R"]()
+* Ceasr's playlist ["Created in R"](https://open.spotify.com/user/csarvi/playlist/5G9vRqFcPFUGBI7VxiQ2pX?si=OyN2TNZeR8KHH-GyC1wQFg)
 
-* Jose's playlist ["Power/jangle pop"]();
+* Jose's playlist ["Power/jangle pop"](https://open.spotify.com/user/12186384264/playlist/4kxFwuecMKs0Ax2Uif1Cwk?si=MCXs8oAJQ_OT0GHmoKbHDw);
 
-* Maia's playlist ["favs extended"]().
+* Maia's playlist ["favs extended"](https://open.spotify.com/user/melizabethp/playlist/0BxdQxq9vaDAEo5IXyr6E6?si=Qw2cakpnSCqCBHka98_paA).
 
 Below is a list of audio features included in this exercise[^1]:
 
