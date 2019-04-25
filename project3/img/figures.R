@@ -72,3 +72,100 @@ png(filename = "./img/nirvana_valence.png")
 fig
 dev.off()
 rm(nirvana, offspring, fig)
+
+
+# CLUSTERING ANALYSIS -----
+clustgRes <- readRDS("model/clustering_res.RDS")
+ccomp <- clustgRes$consensus_evaluate
+
+# k = 3 has the highest PAC
+pacDT <- as.data.table(ccomp$pac) 
+pacDT[, avg_pac := rowMeans(.SD, na.rm=T), .SDcols=grep(x=names(pacDT), pattern="[A-Z]", value=T)]
+
+# Davies-Bouldin index averaged out ---- 
+iiDT <- lapply(seq_along(ccomp$ii), function(x){
+  data.table(ccomp$ii[[x]])[, lapply(.SD, function(x){
+    if(!is.numeric(x)) return(NULL)
+    return(mean(x, na.rm=T))
+  })][, k:=x+2]
+  
+})
+
+iiDT <- do.call(rbind, iiDT)
+iiDT <- melt(iiDT, id.vars = "k", variable.name = "validation_indice",  variable.factor = FALSE, value.factor = FALSE)
+
+# viz section -----
+
+library(ggplot2)
+
+# PAC viz ----
+pac <- melt(pacDT, id.vars = "k", variable.name = "model", variable.factor = F, value.factor = F)[, k:=as.numeric(k)]
+fig <- ggplot() +
+  geom_line(data=pac[model!= "avg_pac"], aes(x=k, y=value, group=model), 
+            colour="grey92", size=1.25, lineend="round", linejoin="round") + 
+  geom_line(data=pac[model == "avg_pac"], aes(x=k, y=value, 
+                                              colour="Averaged PAC"), 
+            size=1.25, lineend="round", linejoin="round") + 
+  geom_point(data=pac[model == "avg_pac"], aes(x=k, y=value), 
+             colour="white", size=4) + 
+  geom_point(data=pac[model == "avg_pac"], aes(x=k, y=value),
+             colour="orange", size=2) + 
+  scale_colour_manual(name="", values=c(`Averaged PAC`="orange")) + 
+  scale_x_continuous(breaks = function(x) round(seq(min(x), max(x), by=1))) + 
+  labs(x="# of clusters", y="Proportion of Ambiguous Clusters\n(PAC)", 
+       title = "PAC (averaged across models) suggests k=3") + 
+  theme_minimal() + 
+  theme(axis.title = element_text(hjust=0), 
+        legend.position = c(0.8,0.9))
+png(filename = "img/pac_graph.png")
+fig
+dev.off()
+rm(fig)
+
+# Davies-bouldin viz ----
+fig <- ggplot(data=iiDT[validation_indice == "davies_bouldin", ], aes(x=k,y=value)) + 
+  geom_line(colour="orange", size=1.25, 
+            lineend="round", linejoin="round") +
+  geom_point(colour="white", size=4) + 
+  geom_point(colour="orange", size=2) + 
+  scale_x_continuous(breaks = function(x) round(seq(min(x), max(x), by=1))) + 
+  labs(x="# of clusters", y="Davies-Bouldin Index\n(averaged across models)", 
+       title = "Davies-Bouldin index (averaged across models) suggests k=3") + 
+  theme_minimal() + 
+  theme(axis.title = element_text(hjust=0))
+png(filename = "img/db_graph.png")
+fig
+dev.off()
+rm(fig)
+
+# dunn viz ----
+fig <- ggplot(data=iiDT[validation_indice == "dunn", ], aes(x=k,y=value)) + 
+  geom_line(colour="orange", size=1.25, 
+            lineend="round", linejoin="round") +
+  geom_point(colour="white", size=4) + 
+  geom_point(colour="orange", size=2) + 
+  scale_x_continuous(breaks = function(x) round(seq(min(x), max(x), by=1))) + 
+  labs(x="# of clusters", y="Dunn Index\n(averaged across models)", 
+       title = "Dunn index (averaged across models) suggests k=3") + 
+  theme_minimal() + 
+  theme(axis.title = element_text(hjust=0))
+png(filename = "img/dunn_graph.png")
+fig
+dev.off()
+rm(fig)
+
+# sillhouette viz ----
+fig <- ggplot(data=iiDT[validation_indice == "silhouette", ], aes(x=k,y=value)) + 
+  geom_line(colour="orange", size=1.25, 
+            lineend="round", linejoin="round") +
+  geom_point(colour="white", size=4) + 
+  geom_point(colour="orange", size=2) + 
+  scale_x_continuous(breaks = function(x) round(seq(min(x), max(x), by=1))) + 
+  labs(x="# of clusters", y="Silhouette Index\n(averaged across models)", 
+       title = "Silhouette index (averaged across models) suggests k=3") + 
+  theme_minimal() + 
+  theme(axis.title = element_text(hjust=0))
+png(filename = "img/silhouette_graph.png")
+fig
+dev.off()
+rm(fig)

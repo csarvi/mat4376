@@ -42,9 +42,9 @@ spotifyr::get_spotify_authorization_code()
 
 Once you are done with this process, you are ready to start pulling the data. Running `process_data.R` may require you to install some packages along the wa. A dynamic menu will appear on your `R` console. If you choose not to install these packages, the data replication process will not be successful. We saved the transformed dataset in `data/data.RDS` in case you wish not to go through the data replication process.
 
-## Data description
+## Data description and transformation
 
-`process_data.R` uses two ancillary functions: `consolidateData()` and `binarize()`. In `consolidateData()`, we pull audio features from an user's playlist, delete some columns and add a label for the user name from which the playlist's information is being pulled. Then we proceed to use `binarize()` which transforms some of the audio features in binary variables with multiple columns (if more than two categories). `binarize()` also scales some features into values ranging from 0 to 1. 
+`process_data.R` uses two ancillary functions: `consolidateData()` and `binarize()`. In `consolidateData()`, we pull audio features from an user's playlist, delete some columns and add a label for the user name from which the playlist's information is being pulled. Then we proceed to use `binarize()` which transforms some of the audio features in binary variables with multiple columns (if more than two categories). `binarize()` also **scales** some features into values ranging from 0 to 1. Scaling is necessary because clustering techniques use distance metrics (in our project, the euclidean distance). See which features are scaled [here](#features_desc).
 
 We aggregate audio features from three playlists:
 
@@ -54,7 +54,7 @@ We aggregate audio features from three playlists:
 
 * Maia's playlist ["favs extended"](https://open.spotify.com/user/melizabethp/playlist/0BxdQxq9vaDAEo5IXyr6E6?si=Qw2cakpnSCqCBHka98_paA).
 
-Below is a list of audio features included in this exercise[^1]:
+<a name="features_desc">Below is a list of audio features included in this exercise[^1]:</a>
 
 * `acousticness`: spotify doesn't provide many details but this is a confidence measure varying from `0.0` to `1.0` with `1.0` representing high confidence the track is acoustic.
 
@@ -96,5 +96,10 @@ names(out)[which(!(names(out) %in% c("track_name", "artist_name", "user_name")))
 rm(out)
 ```
 
+Here is a brief summary of the audio features:
+
+
+
+## Clustering
 
 [^1]: Detail of the full list of audio features provided by the API: [https://developer.spotify.com/documentation/web-api/reference/tracks/get-several-audio-features/](https://developer.spotify.com/documentation/web-api/reference/tracks/get-several-audio-features/)
