@@ -62,7 +62,7 @@ choose not to install these packages, the data replication process will
 not be successful. We saved the transformed dataset in `data/data.RDS`
 in case you wish not to go through the data replication process.
 
-## Data description
+## Data description and transformation
 
 `process_data.R` uses two ancillary functions: `consolidateData()` and
 `binarize()`. In `consolidateData()`, we pull audio features from an
@@ -70,7 +70,10 @@ user’s playlist, delete some columns and add a label for the user name
 from which the playlist’s information is being pulled. Then we proceed
 to use `binarize()` which transforms some of the audio features in
 binary variables with multiple columns (if more than two categories).
-`binarize()` also scales some features into values ranging from 0 to 1.
+`binarize()` also **scales** some features into values ranging from 0 to
+1. Scaling is necessary because clustering techniques use distance
+metrics (in our project, the euclidean distance). See which features are
+scaled [here](#features_desc).
 
 We aggregate audio features from three playlists:
 
@@ -83,7 +86,8 @@ We aggregate audio features from three playlists:
   - Maia’s playlist [“favs
     extended”](https://open.spotify.com/user/melizabethp/playlist/0BxdQxq9vaDAEo5IXyr6E6?si=Qw2cakpnSCqCBHka98_paA).
 
-Below is a list of audio features included in this exercise\[1\]:
+<a name="features_desc">Below is a list of audio features included in
+this exercise[\[1\]](#link_features):</a>
 
   - `acousticness`: spotify doesn’t provide many details but this is a
     confidence measure varying from `0.0` to `1.0` with `1.0`
@@ -97,7 +101,7 @@ Below is a list of audio features included in this exercise\[1\]:
 
   - `energy`: how intense the track is. For instance, a death metal
     tracks have more “energy” than a typical Portishead song (*see
-    below*);
+    below*)[\[2\]](#figures_script);
 
 ![](./img/portishead_energy.png)
 
@@ -137,9 +141,13 @@ Below is a list of audio features included in this exercise\[1\]:
 
 ![](./img/nirvana_valence.png)
 
-After using `binarize()`, we end up with 46 audio features ad 722
-tracks. Here is a list of the audio features used in the clustering
-exercise:
+For convenience, we saved the data in
+[raw](https://github.com/jdemello/mat4376/blob/master/project3/data/raw.RDS)
+and
+[processed](https://github.com/jdemello/mat4376/blob/master/project3/data/data.RDS)
+formats (before/after binarization). After using `binarize()`, we end up
+with 46 audio features ad 722 tracks. Here is a list of the audio
+features used in the clustering exercise:
 
     ##  [1] "danceability"          "energy"               
     ##  [3] "loudness"              "speechiness"          
@@ -165,5 +173,52 @@ exercise:
     ## [43] "key_mode_G_major"      "key_mode_G_minor"     
     ## [45] "key_mode_Gsharp_major" "key_mode_Gsharp_minor"
 
-1.  Detail of the full list of audio features provided by the API:
-    <https://developer.spotify.com/documentation/web-api/reference/tracks/get-several-audio-features/>
+Here is a summary for some
+    columns:
+
+    ##   track_name        artist_name         danceability        energy      
+    ##  Length:722         Length:722         Min.   :0.0961   Min.   :0.0442  
+    ##  Class :character   Class :character   1st Qu.:0.4103   1st Qu.:0.5695  
+    ##  Mode  :character   Mode  :character   Median :0.5180   Median :0.7370  
+    ##                                        Mean   :0.5132   Mean   :0.6929  
+    ##                                        3rd Qu.:0.6098   3rd Qu.:0.8538  
+    ##                                        Max.   :0.9670   Max.   :0.9980  
+    ##     loudness       speechiness       acousticness      
+    ##  Min.   :0.0000   Min.   :0.02350   Min.   :0.0000032  
+    ##  1st Qu.:0.6572   1st Qu.:0.03170   1st Qu.:0.0048025  
+    ##  Median :0.7494   Median :0.03895   Median :0.0387500  
+    ##  Mean   :0.7212   Mean   :0.05788   Mean   :0.1706681  
+    ##  3rd Qu.:0.8216   3rd Qu.:0.06200   3rd Qu.:0.2522500  
+    ##  Max.   :1.0000   Max.   :0.48500   Max.   :0.9740000  
+    ##  instrumentalness       liveness         valence           tempo       
+    ##  Min.   :0.0000000   Min.   :0.0243   Min.   :0.0332   Min.   :0.0000  
+    ##  1st Qu.:0.0000000   1st Qu.:0.0975   1st Qu.:0.3063   1st Qu.:0.3499  
+    ##  Median :0.0001555   Median :0.1315   Median :0.4835   Median :0.4664  
+    ##  Mean   :0.0723056   Mean   :0.1925   Mean   :0.4895   Mean   :0.4793  
+    ##  3rd Qu.:0.0184750   3rd Qu.:0.2525   3rd Qu.:0.6663   3rd Qu.:0.5913  
+    ##  Max.   :0.9130000   Max.   :0.9890   Max.   :0.9660   Max.   :1.0000  
+    ##   duration_ms     time_signature    user_name           mode_minor    
+    ##  Min.   :0.0000   Min.   :0.0000   Length:722         Min.   :0.0000  
+    ##  1st Qu.:0.1570   1st Qu.:0.7500   Class :character   1st Qu.:0.0000  
+    ##  Median :0.2003   Median :0.7500   Mode  :character   Median :0.0000  
+    ##  Mean   :0.2110   Mean   :0.7334                      Mean   :0.1898  
+    ##  3rd Qu.:0.2438   3rd Qu.:0.7500                      3rd Qu.:0.0000  
+    ##  Max.   :1.0000   Max.   :1.0000                      Max.   :1.0000
+
+We can see for instance that approximately 20% of the tracks are in
+minor mode (`mode_minor`).
+
+As for the keys, instead, we use the unprocessed raw data to get an idea
+of how these keys are distributed:
+
+## Data analysis
+
+## Clustering
+
+1.  <a name="link_features">Detail of the full list of audio features
+    provided by the API:
+    <https://developer.spotify.com/documentation/web-api/reference/tracks/get-several-audio-features/>.</a>
+
+2.  <a name="figures_script">See the file
+    [`figures.R`](https://github.com/jdemello/mat4376/blob/master/project3/img/figures.R)
+    to replicate the charst shown in this project.</a>

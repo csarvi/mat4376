@@ -33,6 +33,9 @@ master <- lapply(seq_along(params),
 # stack datasets ----
 masterStacked <- do.call(rbind, master)
 
+# save raw data
+saveRDS(masterStacked, "data/raw.RDS")
+
 #  binarize data, remove unimportant variables and standardize some vars ----
 out <- binarize(masterStacked, c("key", "mode", "key_mode"))
 

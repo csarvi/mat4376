@@ -54,7 +54,7 @@ We aggregate audio features from three playlists:
 
 * Maia's playlist ["favs extended"](https://open.spotify.com/user/melizabethp/playlist/0BxdQxq9vaDAEo5IXyr6E6?si=Qw2cakpnSCqCBHka98_paA).
 
-<a name="features_desc">Below is a list of audio features included in this exercise[^1]:</a>
+<a name="features_desc">Below is a list of audio features included in this exercise[[^1]](#link_features):</a>
 
 * `acousticness`: spotify doesn't provide many details but this is a confidence measure varying from `0.0` to `1.0` with `1.0` representing high confidence the track is acoustic.
 
@@ -62,7 +62,7 @@ We aggregate audio features from three playlists:
 
 * `duration_ms`: track duration in milliseconds (ms);
 
-* `energy`: how intense the track is. For instance, a death metal tracks have more "energy" than a typical Portishead song (_see below_);
+* `energy`: how intense the track is. For instance, a death metal tracks have more "energy" than a typical Portishead song (_see below_)[[^2]](#figures_script);
 
 ![](./img/portishead_energy.png)
 
@@ -88,7 +88,7 @@ We aggregate audio features from three playlists:
 
 ![](./img/nirvana_valence.png)
 
-After using `binarize()`, we end up with 46 audio features ad 722 tracks. Here is a list of the audio features used in the clustering exercise:
+For convenience, we saved the data in [raw](https://github.com/jdemello/mat4376/blob/master/project3/data/raw.RDS) and [processed](https://github.com/jdemello/mat4376/blob/master/project3/data/data.RDS) formats (before/after binarization). After using `binarize()`, we end up with 46 audio features ad 722 tracks. Here is a list of the audio features used in the clustering exercise:
 
 ```{r echo=FALSE, eval=TRUE}
 out <- readRDS(file = "data/data.RDS")
@@ -96,10 +96,26 @@ names(out)[which(!(names(out) %in% c("track_name", "artist_name", "user_name")))
 rm(out)
 ```
 
-Here is a brief summary of the audio features:
+Here is a summary for some columns:
+
+```{r eval=TRUE, echo=FALSE}
+data <- readRDS(file = "data/data.RDS")
+summary(data[names(data)[-grep(x=names(data), pattern="(?i)^key")]])
+rm(data)
+```
+
+We can see for instance that approximately 20% of the tracks are in minor mode (`mode_minor`).
+
+As for the keys, instead, we use the unprocessed raw data to get an idea of how these keys are distributed:
+
+
+## Data analysis
 
 
 
 ## Clustering
 
-[^1]: Detail of the full list of audio features provided by the API: [https://developer.spotify.com/documentation/web-api/reference/tracks/get-several-audio-features/](https://developer.spotify.com/documentation/web-api/reference/tracks/get-several-audio-features/)
+
+[^1]: <a name="link_features">Detail of the full list of audio features provided by the API: [https://developer.spotify.com/documentation/web-api/reference/tracks/get-several-audio-features/](https://developer.spotify.com/documentation/web-api/reference/tracks/get-several-audio-features/).</a>
+
+[^2]: <a name="figures_script">See the file [`figures.R`](https://github.com/jdemello/mat4376/blob/master/project3/img/figures.R) to replicate the charst shown in this project.</a>
