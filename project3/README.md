@@ -211,7 +211,17 @@ minor mode (`mode_minor`).
 As for the keys, instead, we use the unprocessed raw data to get an idea
 of how these keys are distributed:
 
+![](./img/key_mode_dist.png)
+
+It is interesting to see that all major keys are ahead of minor ones
+(except for `D# major`). `D major` is the most popular key mode followed
+closely by `C major`. As for minors, `B minor` appears in the front with
+3.5% of the observations. The least popular key mode is `D minor`.
+
 ## Data analysis
+
+Before starting clustering, one may want to analyze similarities,
+dissimilarities of the playlists comprising the dataset.
 
 ## Clustering
 
