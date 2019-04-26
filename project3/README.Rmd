@@ -114,7 +114,35 @@ It is interesting to see that all major keys are ahead of minor ones (except for
 
 ## Data analysis
 
-Before starting clustering, one may want to analyze similarities, dissimilarities of the playlists comprising the dataset.
+You may want to explore the data before proceeding with clustering. In the context of this project, our spotify dataset comprises of 3 playlists from three distinct users. An important step to see whether the clustering may be successful is to check whether the playlists differ across features.
+
+First, we look at the percentage distribution of tracks by user. `Maia`'s playlist is, by far, the largest with 56.8% of the tracks, followed by `Cesar`(23.3%) and `Jose`(19.9%). 
+
+![](./img/track_perc.png)
+
+Now we look at `valence` which is a measure of how "happy" the track is. Which playlist is more upbeat?
+
+![](./img/valence_user.png)
+
+The distributions above show Jose's playlist with relatively more joyful songs, Cesar's tracks are lower in valence (on average) and Maia's track's `valence` distribution is more flat compared to the other users. 
+
+![](./img/energy_user.png)
+
+With respect to `energy`, the distributions do differ although one can say that they are generally high in `energy` (here assuming `energy > 0.5`). Cesar and Maia's distributions show thicker left tails whereas Jose's distribution thins out around the 0.20 mark. Hence the distributions to differ but they seem to have similar first moment, this could be problematic for clustering.
+
+![](./img/danceability_user.png)
+
+Now moving to `danceability`, Jose's playlist distribution approximates a bimodal distribution. Cesar's and Maia's `danceability` distributions are similar in the first moment, with the second moment being greater in Maia's.
+
+![](./img/tempo_user.png)
+
+The next feature is `tempo`. This time, Cesar's distribution looks fairly bimodal. All three user's distributions seem to have distinct first moments. Jose's playlist is highly skewed and bunches around the 0.5 tempo mark.
+
+![](./img/loudness_user.png)
+
+Cesar's playlist "Created in R" (he did created it using `spotifyr` :grinning:) seems particularly bunched around the 0.75 mark in `loudness`. Jose's playlist is a bit more evenly distributed and _typically_ less loud than the others. Maia's playlist "favs extended" is louder than Jose's but it also has some tracks at the very far left end of the  `loudness` distribution.
+
+
 
 ## Clustering
 
